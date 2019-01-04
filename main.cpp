@@ -1,37 +1,14 @@
 #include <iostream>
 // #include "./datastructures/lists/singlylinkedlist.h"
 #include "./datastructures/arrays/stringsmasher.h"
-#include <string>
-#include <vector>
-
-void insertTokenIntoSpace(std::string const& token, std::string& str, int endInd) {
-	for (int i = token.size() - 1; i >= 0; --i) {
-		str[endInd] = token[i];
-		--endInd;
-	}
-}
-
-void URLify(std::string& str, int strLen) {
-	//let's iterate backwards:
-	int k = str.size() - 1;
-	for (int j = strLen - 1; j >= 0; --j) {
-		char c = str[j];
-		if (c == ' ') {
-			insertTokenIntoSpace("%20", str, k);
-			k -= 3;
-			continue;
-		}
-		str[k] = c;
-		--k;
-	}
-}
+#include "./datastructures/arrays/stringhelper.h"
 
 int main(void) {
     // std::cout << "Hello world!" << std::endl;
 	//               0123456789  12
 	std::string str("Hi my friend Jo      ");
 	int strLen = 15;
-	URLify(str, strLen);
+	StringHelper::URLify(str, strLen);
     // Node<std::string> node("hilo");
     // Node<int> node1(1);
     // Node<int> node2(2);

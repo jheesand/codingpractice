@@ -64,7 +64,7 @@ namespace StringHelper {
         }
 
         unsigned* auxArr = new unsigned[len2];  //dynamically creating helper array
-        populateAuxPattern(str2, aux, len2);    //preprocess step
+        populateAuxPattern(str2, auxArr, len2);    //preprocess step
 
         for (unsigned i = 0; i < len1; ++i) {
             unsigned j = 0;
@@ -116,7 +116,7 @@ namespace StringHelper {
         char ithMap = map[index];
         char bitCheck = 1 << ithBit;
 
-        return ithMap & bitCheck;
+        return static_cast<bool>(ithMap & bitCheck);
     }
 
     void insertIntoMapArchive(char* map, char c) {
