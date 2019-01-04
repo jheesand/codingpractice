@@ -1,5 +1,6 @@
 #include <iostream>
-#include "./datastructures/lists/singlylinkedlist.h"
+// #include "./datastructures/lists/singlylinkedlist.h"
+#include "./datastructures/arrays/stringsmasher.h"
 #include <string>
 #include <vector>
 
