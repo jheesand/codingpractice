@@ -58,7 +58,7 @@ namespace StringHelper {
 
     /**
     */
-    int isSubstringKMPMethod(char* str1, char* str2, unsigned const len1, unsigned const len2) {
+    int isSubstringKMPMethod(char const* str1, char const* str2, unsigned const len1, unsigned const len2) {
         if (len1 < len2) {
             return -1;  // substring cannot be larger than string: early exit
         }
@@ -76,7 +76,7 @@ namespace StringHelper {
         delete auxArr;
     }
 
-    void populateCharList(unordered_map<char, int>& charList, string const& str) {
+    void _populateCharList(unordered_map<char, int>& charList, string const& str) {
         for (unsigned i = 0; i < str.size(); ++i) {
             char c = str[i];
             unordered_map<char, int>::iterator it = charList.find(c);
@@ -88,13 +88,13 @@ namespace StringHelper {
             }
         }
     }
-    bool isPerm(string const& str1, string const& str2) {
+    bool isPermutation(string const& str1, string const& str2) {
         if (str1.size() != str2.size()) {
             return false;
         }
 
         unordered_map<char, int> charList;
-        populateCharList(charList, str1);
+        _populateCharList(charList, str1);
 
         for (unsigned i = 0; i < str2.size(); ++i) {
             char c = str2[i];
@@ -109,7 +109,7 @@ namespace StringHelper {
         return true;
     }
 
-    bool existsInMap(char* map, char c) {
+    bool _existsInMap(char* map, char c) {
         unsigned index = c / 8;
         unsigned ithBit = c % 8;
 
@@ -119,7 +119,7 @@ namespace StringHelper {
         return static_cast<bool>(ithMap & bitCheck);
     }
 
-    void insertIntoMapArchive(char* map, char c) {
+    void _insertIntoMapArchive(char* map, char c) {
         //check which index of the map c is in
         unsigned index = c / 8;
         unsigned ithBit = c % 8;
@@ -135,9 +135,9 @@ namespace StringHelper {
 
         for (unsigned i = 0; i < str.size(); ++i) {
             char c = str[i];
-            bool seen = existsInMap(flagMaps, c);
+            bool seen = _existsInMap(flagMaps, c);
             if (!seen) {
-                insertIntoMapArchive(flagMaps, c);
+                _insertIntoMapArchive(flagMaps, c);
             }
             else {
                 return false;
@@ -147,7 +147,7 @@ namespace StringHelper {
         return true;
     }
 
-    void insertTokenIntoSpace(std::string const& token, std::string& str, int endInd) {
+    void _insertTokenIntoSpace(std::string const& token, std::string& str, int endInd) {
         for (int i = token.size() - 1; i >= 0; --i) {
             str[endInd] = token[i];
             --endInd;
@@ -160,7 +160,7 @@ namespace StringHelper {
         for (int j = strLen - 1; j >= 0; --j) {
             char c = str[j];
             if (c == ' ') {
-                insertTokenIntoSpace("%20", str, k);
+                _insertTokenIntoSpace("%20", str, k);
                 k -= 3;
                 continue;
             }
@@ -169,4 +169,132 @@ namespace StringHelper {
         }
     }
 
+    bool isPalindromPerm(std::string const& str1) {
+        char alphabetFlags[4] = {0}; //32-bits more than enough to represent 26 letters (set of 4 8-bits)
+        int numValidChars = 0;
+        // toggles specific alphabet flag for each letter in the string seen
+        for (unsigned i = 0; i < str1.size(); ++i) {
+            char c = str1[i];
+            if (c == ' ') {
+                continue;
+            }
+
+            if (c >= 'a' && c <= 'z') {
+                c = static_cast<char>(c - 'a' + 'A');
+            }
+            // else {
+            //     //assert c >= 'A' && c <= 'Z' if not- char is not in the alphabet
+            // }
+
+            int rawFlagInd = c - 'A';
+            unsigned ithSetInd = rawFlagInd / 8;
+            char ithBitFlag = 1 << rawFlagInd % 8;
+            if (alphabetFlags[ithSetInd] & ithBitFlag) {
+                alphabetFlags[ithSetInd] &= ~ithBitFlag;
+            }
+            else {
+                alphabetFlags[ithSetInd] |= ithBitFlag;
+            }
+
+            ++numValidChars;  //keeps track of how many letters seen (excluding spaces)
+        }
+        // odd num in string- must be one-odd bit in one of the flags sets
+        if (numValidChars % 2) {
+            bool flagged = false;
+            for (unsigned i = 0; i < 4; ++i) {
+                char set = alphabetFlags[i];
+                if (alphabetFlags[i] > 0 && !(set & (set - 1))) {
+					if (flagged) {
+						return false;
+					}
+                    flagged = true;
+                    continue;
+                }
+            }
+        }
+        else {
+            return alphabetFlags[0] + alphabetFlags[1] + alphabetFlags[2] + alphabetFlags[3] == 0;
+        }
+    }
+
+    bool isOneEditAway(string& str1, string& str2) {
+        int str1Size = str1.size();
+        int str2Size = str2.size();
+
+        if (str1Size - str2Size > 1 || str1Size - str2Size < -1) {
+            return false;
+        }
+
+        string::iterator itA = str1.begin();  // iterator of bigger string
+        string::iterator itB = str2.begin();
+
+        if (str2Size > str1Size) {
+            itA = str2.begin();
+            itB = str1.begin();
+        }
+
+        bool mismatchFound = false;
+        while (itA != str1.end() && itB != str2.end()) {
+            if (*itA != *itB) {
+                if (mismatchFound) {
+                    return false;
+                }
+
+                mismatchFound = true;
+                if (str1Size !=str2Size) {
+                    ++itA;
+                    continue;
+                }
+            }
+            ++itA;
+            ++itB;
+        }
+
+        // //not one edit away-- might want to short-circuit this
+        // if (itA + 1 != itA.end()) {
+        //     return false;
+        // }
+
+        return true;
+    }
+
+    string compressString(string const& str) {
+        if (str.size() <= 2) {
+            return str;
+        }
+
+        string compressed;
+
+        char c = str[0];
+        unsigned numEncountered = 1;
+
+        for (unsigned i = 1; i < str.size(); ++i) {
+            if (c == str[i]) {
+				++numEncountered;
+                continue;
+            }
+
+            compressed += c + to_string(numEncountered);
+            c = str[i];
+            numEncountered = 1;
+        }
+
+        compressed += c + to_string(numEncountered);
+
+        if (compressed.size() < str.size()) {
+            return compressed;
+        }
+
+        return str;
+    }
+
+    bool isRotatedString(string const& str, string const& rotStr) {
+        string appendedString = rotStr + rotStr;
+        if (isSubstringKMPMethod(appendedString.c_str(), str.c_str(), appendedString.size(), str.size()) >= 0
+            && appendedString.size() == str.size() * 2) {
+            return true;
+        }
+
+        return false;
+    }
 }

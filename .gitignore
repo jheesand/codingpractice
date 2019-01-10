@@ -1,2 +1,4 @@
 # ignore builds
 *.exe
+tests/
+sidequests/
