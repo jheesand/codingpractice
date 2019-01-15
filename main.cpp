@@ -7,6 +7,6 @@
 
 int main(void) {
     // std::cout << "Hello world!" << std::endl;
-    Ch1Tests::runZeroMatrixTest();
+    Ch1Tests::runSubstringTests();
     return 0;
 }

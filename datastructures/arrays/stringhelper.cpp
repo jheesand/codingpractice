@@ -1,16 +1,24 @@
 #include "stringhelper.h"
+#include <math.h>
 
 namespace StringHelper {
+    using namespace std;
+
+    bool _strSubstrConditionsMet(unsigned const len1, unsigned const len2) {
+        return len1 > len2 && len1 > 0 && len2 > 0;
+    }
+
     int isSubstringNaive(char const* str1, char const* str2, unsigned const len1, unsigned const len2) {
-        if (len1 < len2) {
-            return -1;  // substring cannot be larger than string
+        if (!_strSubstrConditionsMet(len1, len2)) {
+            return -1;  // substring cannot be larger than string: early exit also no empty strings puhlease
         }
 
         for (unsigned i = 0; i < len1; ++i) {
             unsigned j = 0; //iterating ind for second string
-            bool matchFound = true;
+            bool matchFound = false;
             //first char match found
             if (str1[i] == str2[j]) {
+                matchFound = true;
                 while (j < len2) {
                     if (str1[i + j] != str2[j]) {
                         matchFound = false;
@@ -29,8 +37,10 @@ namespace StringHelper {
     }
 
     /**
+     * Helper function that creates an auxiliary array that contains index positions
+     * of on the specific index'd pos of the pattern.
     */
-    void populateAuxPattern(char const* pattern, unsigned* aux, unsigned const len) {
+    void _populateAuxPattern(char const* pattern, unsigned* aux, unsigned const len) {
         unsigned j = 0;
         unsigned i = j + 1;
         aux[0] = 0;
@@ -41,7 +51,7 @@ namespace StringHelper {
                 ++j;
             }
             else {
-                while (pattern[j] != pattern[i] || j == 0) {
+                while (pattern[j] != pattern[i] && j > 0) {
                     unsigned jumpBackInd = aux[j - 1];
                     j = jumpBackInd;
                 }
@@ -59,21 +69,109 @@ namespace StringHelper {
     /**
     */
     int isSubstringKMPMethod(char const* str1, char const* str2, unsigned const len1, unsigned const len2) {
-        if (len1 < len2) {
-            return -1;  // substring cannot be larger than string: early exit
+        if (!_strSubstrConditionsMet(len1, len2)) {
+            return -1;  // substring cannot be larger than string: early exit also no empty strings puhlease
         }
 
-        unsigned* auxArr = new unsigned[len2];  //dynamically creating helper array
-        populateAuxPattern(str2, auxArr, len2);    //preprocess step
-
+        unsigned* auxArr = new unsigned[len2];     //dynamically creating helper array
+        _populateAuxPattern(str2, auxArr, len2);    //preprocess step
+        unsigned j = 0;  //ind iterator on the pattern
         for (unsigned i = 0; i < len1; ++i) {
-            unsigned j = 0;
             if (str1[i] == str2[j]) {
-
+                ++j;
+                //reached the end of the pattern!
+                if (j >= len2) {
+                    unsigned startInd = i - (len2 - 1);
+                    return startInd;
+                }
+            }
+            else {
+                while (str1[i] != str2[j] && j > 0) {
+                    j = auxArr[j - 1];
+                }
             }
         }
+        return -1;
+
         //cleanup
         delete auxArr;
+    }
+
+    /**
+     * 
+    */
+    int _hashSubstring(char const* str, unsigned startInd, unsigned len) {
+        unsigned lastInd = startInd + len - 1;
+        unsigned power = 0;
+        unsigned prime = 3;
+        int hashSum = 0;
+
+        for (unsigned i = startInd; i <= lastInd; ++i) {
+            hashSum += static_cast<int>(str[i]) * static_cast<int>(pow(prime, power));
+            ++power;
+        }
+
+        return hashSum;
+    }
+
+    bool _linearCheckSubstr(char const* str1, char const* str2, unsigned start1, unsigned start2, unsigned num) {
+        //linear check
+        bool same = true;
+        while (start2 < num) {
+            if (str2[start2] != str1[start1]) {
+                same = false;
+                break;
+            }
+            ++start1;
+            ++start2;
+        }
+
+        return same;
+    }
+
+    /**
+     * The inefficient way with hashing
+    */
+    int isSubstringRabinKarpMethod(char const* str1, char const* str2, unsigned len1, unsigned len2) {
+        if (!_strSubstrConditionsMet(len1, len2)) {
+            return -1;  // substring cannot be larger than string: early exit also no empty strings puhlease
+        }
+
+        //let's hash the pattern:
+        int key = _hashSubstring(str2, 0, len2);
+
+        for (unsigned i = 0; (i + len2) <= len1; ++i) {
+            int subStrKey = _hashSubstring(str1, i, len2);
+            if (subStrKey == key && _linearCheckSubstr(str1, str2, i, 0, len2)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * More efficient way with hashing-- less calls to the pow fn
+    */
+    int isSubstringRabinKarpMethodEff(char const* str1, char const* str2, unsigned len1, unsigned len2) {
+        if (!_strSubstrConditionsMet(len1, len2)) {
+            return -1;  // substring cannot be larger than string: early exit also no empty strings puhlease
+        }
+
+        //let's hash the pattern:
+        int key = _hashSubstring(str2, 0, len2);
+        int subStrKey = _hashSubstring(str1, 0, len2);
+        if (subStrKey == key && _linearCheckSubstr(str1, str2, 0, 0, len2)) {
+            return 0;
+        }
+        for (unsigned i = 1; (i + len2) <= len1; ++i) {
+            int updateKey = (subStrKey - static_cast<int>(str1[i - 1])) / 3;
+            updateKey += str1[i + len2 - 1] * pow(3, len2 - 1);
+            if (updateKey == key && _linearCheckSubstr(str1, str2, i, 0, len2)) {
+                return i;
+            }
+            subStrKey = updateKey;
+        }
+        return -1;
     }
 
     void _populateCharList(unordered_map<char, int>& charList, string const& str) {
@@ -204,9 +302,9 @@ namespace StringHelper {
             for (unsigned i = 0; i < 4; ++i) {
                 char set = alphabetFlags[i];
                 if (alphabetFlags[i] > 0 && !(set & (set - 1))) {
-					if (flagged) {
-						return false;
-					}
+                    if (flagged) {
+                        return false;
+                    }
                     flagged = true;
                     continue;
                 }
@@ -270,7 +368,7 @@ namespace StringHelper {
 
         for (unsigned i = 1; i < str.size(); ++i) {
             if (c == str[i]) {
-				++numEncountered;
+                ++numEncountered;
                 continue;
             }
 
@@ -290,8 +388,7 @@ namespace StringHelper {
 
     bool isRotatedString(string const& str, string const& rotStr) {
         string appendedString = rotStr + rotStr;
-        if (isSubstringKMPMethod(appendedString.c_str(), str.c_str(), appendedString.size(), str.size()) >= 0
-            && appendedString.size() == str.size() * 2) {
+        if (rotStr.size() == str.size() && isSubstringKMPMethod(appendedString.c_str(), str.c_str(), appendedString.size(), str.size()) >= 0) {
             return true;
         }
 
