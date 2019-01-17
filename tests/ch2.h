@@ -19,6 +19,7 @@ class Ch2Tests {
         void partitionListByValue_(unsigned index, int value);
         void returnKthToLast_(unsigned index, int k);
         void sumLists_(unsigned index, unsigned index2);
-        void checkPalindrome_(unsigned index);
+        bool checkPalindrome_(unsigned index);
+        bool checkIntersect_(unsigned index, unsigned index2);
         std::vector< SinglyLinkedList<int> > intSLLs_;
 };

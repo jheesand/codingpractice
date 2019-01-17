@@ -2,6 +2,9 @@
 #include "singlylinkedlist.h"
 
 namespace LinkedListHelper {
+    template <class T>
+    unsigned getNumNodesInList(Node<T>* startNode);
+
     //2.3 Deleting node
     template <class T>
     void deleteMiddleNode(Node<T>* mid);
@@ -15,7 +18,10 @@ namespace LinkedListHelper {
     //    return NULL if intersection not found
     template <class T>
     Node<T>* getIntersectNode(Node<T>* pHead1, Node<T>* pHead2);
-    
+
+    //2.8 Loop detection
+    template <class T>
+    Node<T>* getStartCycle(Node<T>* pHead);
 }
 
 #include "linkedlisthelper.cpp"

@@ -258,3 +258,18 @@ bool SinglyLinkedList<T>::isPalindrome() {
 
     return true;
 }
+
+template <class T>
+void SinglyLinkedList<T>::attachLinkedList(SinglyLinkedList<T>& appendList) {
+    if (head_ == NULL) {
+        head_ = appendList.getHead();
+        return;
+    }
+
+    Node<T>* iter = head_;
+    while (iter->getNextNode() != NULL) {
+        iter = iter->getNextNode();
+    }
+
+    iter->setNextNode(appendList.getHead());
+}

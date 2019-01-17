@@ -18,7 +18,7 @@ namespace LinkedListHelper {
         iter->setValue(next->getValue());
         iter->setNextNode(NULL);
     }
-
+//notetoself-- this is really gross- refactor please
     template <class T>
     SinglyLinkedList<T> sumList(Node<T>* num1, Node<T>* num2, bool reverseOrder) {
         Node<T>* iter1 = num1;
@@ -114,4 +114,56 @@ namespace LinkedListHelper {
 
         return answer;
     }
-}
+
+    template <class T>
+    unsigned getNumNodesInList(Node<T>* startNode) {
+        Node<T>* iter = startNode;
+        unsigned count = 0;
+
+        //DRY THIS UP
+        while (iter != NULL) {
+            ++count;
+            iter = iter->getNextNode();
+        }
+
+        return count;
+    }
+
+    template <class T>
+    Node<T>* getIntersectNode(Node<T>* pHead1, Node<T>* pHead2) {
+        unsigned count1 = getNumNodesInList(pHead1);
+        unsigned count2 = getNumNodesInList(pHead2);
+
+        Node<T>* longerIter = pHead1;
+        Node<T>* otherIter = pHead2;
+        unsigned extraSteps = count1 - count2;  //if neg-- extremely high
+
+        if (count2 > count1) {
+            longerIter = pHead2;
+            otherIter = pHead1;
+            extraSteps = count2 - count1;
+        }
+
+        //pulling the starting node pos up to the other node list
+        while (extraSteps > 0) {
+            longerIter = longerIter->getNextNode();
+            --extraSteps;
+        }
+
+        while (longerIter != NULL && otherIter != NULL) {
+            if (longerIter == otherIter) {
+                //found the intersection
+                return longerIter;
+            }
+
+            longerIter = longerIter->getNextNode();
+            otherIter = otherIter->getNextNode();
+        }
+        return NULL;
+    }
+
+    template <class T>
+    Node<T>* getStartCycle(Node<T>* pHead) {
+        return NULL;
+    }
+}  //end of namespace LinkedListHelper

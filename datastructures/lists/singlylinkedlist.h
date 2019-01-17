@@ -18,7 +18,7 @@ class SinglyLinkedList {
         void partitionList(T value);
         //2.6
         bool isPalindrome();
-
+        void attachLinkedList(SinglyLinkedList<T>& appendList);
         // void sortList();
 
         //2.1

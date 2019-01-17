@@ -5,7 +5,7 @@
 void Ch2Tests::init() {
     int loopCount = rand() % 30 + 30; 
     for (int i = 0; i < 6; ++i) {
-		intSLLs_.push_back(SinglyLinkedList<int>());
+        intSLLs_.push_back(SinglyLinkedList<int>());
     }
 
     for (int i = 0; i <= loopCount; ++i) {
@@ -34,20 +34,20 @@ void Ch2Tests::init() {
     intSLLs_[9].pushFront(new Node<int>(9));
     intSLLs_[9].pushFront(new Node<int>(2));
 
-	intSLLs_.push_back(SinglyLinkedList<int>());
-	intSLLs_[10].pushFront(new Node<int>(1));
-	intSLLs_[10].pushFront(new Node<int>(3));
-	intSLLs_[10].pushFront(new Node<int>(2));
-	intSLLs_[10].pushFront(new Node<int>(2));
-	intSLLs_[10].pushFront(new Node<int>(3));
-	intSLLs_[10].pushFront(new Node<int>(1));
+    intSLLs_.push_back(SinglyLinkedList<int>());
+    intSLLs_[10].pushFront(new Node<int>(1));
+    intSLLs_[10].pushFront(new Node<int>(3));
+    intSLLs_[10].pushFront(new Node<int>(2));
+    intSLLs_[10].pushFront(new Node<int>(2));
+    intSLLs_[10].pushFront(new Node<int>(3));
+    intSLLs_[10].pushFront(new Node<int>(1));
 
-	intSLLs_.push_back(SinglyLinkedList<int>());
-	intSLLs_[11].pushFront(new Node<int>(1));
-	intSLLs_[11].pushFront(new Node<int>(3));
-	intSLLs_[11].pushFront(new Node<int>(2));
-	intSLLs_[11].pushFront(new Node<int>(3));
-	intSLLs_[11].pushFront(new Node<int>(1));
+    intSLLs_.push_back(SinglyLinkedList<int>());
+    intSLLs_[11].pushFront(new Node<int>(1));
+    intSLLs_[11].pushFront(new Node<int>(3));
+    intSLLs_[11].pushFront(new Node<int>(2));
+    intSLLs_[11].pushFront(new Node<int>(3));
+    intSLLs_[11].pushFront(new Node<int>(1));
 }
 
 void Ch2Tests::printAllLinkedLists() {
@@ -117,20 +117,36 @@ void Ch2Tests::sumLists_(unsigned index1, unsigned index2) {
     printLinkedList(intSLLs_.size() - 1);
 }
 
-void Ch2Tests::checkPalindrome_(unsigned index) {
-	if (!checkIndex_(index)) {
-		return;
-	}
-	std::cout << "Original List: " << std::endl;
-	printLinkedList(index);
-	std::cout << "Palindrome: " << intSLLs_[index].isPalindrome() << std::endl;
+bool Ch2Tests::checkPalindrome_(unsigned index) {
+    if (!checkIndex_(index)) {
+        return false;
+    }
+    std::cout << "Original List: " << std::endl;
+    printLinkedList(index);
+    bool isPalin = intSLLs_[index].isPalindrome();
+    std::cout << "Palindrome: " << isPalin << std::endl;
+    return isPalin;
 }
 
+bool Ch2Tests::checkIntersect_(unsigned index1, unsigned index2) {
+    if (!(checkIndex_(index1) && checkIndex_(index1))) {
+        return false;
+    }
+    std::cout << "Original Lists: " << std::endl;
+    printLinkedList(index1);
+    printLinkedList(index2);
+    Node<int>* node = LinkedListHelper::getIntersectNode(intSLLs_[index1].getHead(), intSLLs_[index2].getHead());
+
+    if (node != NULL) {
+        return true;
+		std::cout << "Intersecting Node: " << node << " w/ value: " << node->getValue() << std::endl;
+    }
+    return false;
+}
+
+
 void Ch2Tests::run() {
-	checkPalindrome_(10);
-	checkPalindrome_(11);
-	checkPalindrome_(5);
-	checkPalindrome_(0);
+    checkIntersect_(7,9);
 }
 
 void Ch2Tests::cleanup() {
