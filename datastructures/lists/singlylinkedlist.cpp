@@ -1,7 +1,19 @@
 #include <unordered_map>
+#include <iostream>
+#include <stack>
+template <class T>
+SinglyLinkedList<T>::SinglyLinkedList() : head_(NULL){
+}
+
+template <class T>
+SinglyLinkedList<T>::~SinglyLinkedList() {
+    clearList();
+}
+
 template <class T>
 void SinglyLinkedList<T>::removeNodeInList_(Node<T>* prevNodePtr, Node<T>* nodePtr) {
     prevNodePtr->setNextNode(nodePtr->getNextNode());
+    nodePtr->setNextNode(NULL);
 }
 
 /**
@@ -39,15 +51,6 @@ void SinglyLinkedList<T>::removeDuplicateValuesNoBuffer_() {
     }
 }
 
-template <class T>
-SinglyLinkedList<T>::SinglyLinkedList() : head_(NULL){
-}
-
-template <class T>
-SinglyLinkedList<T>::~SinglyLinkedList() {
-    clearList();
-}
-
 /**
  * inserts a node at the very beginning of the list
 */
@@ -61,6 +64,20 @@ void SinglyLinkedList<T>::pushFront(Node<T>* nodePtr) {
 
     nodePtr->setNextNode(head_);
     head_ = nodePtr;
+}
+/**
+ * removes front node
+*/
+template <class T>
+Node<T>* SinglyLinkedList<T>::popFront() {
+    if (head_ == NULL) {
+        return NULL;
+    }
+
+    Node<T>* temp = head_;
+    head_ = temp->getNextNode();
+    temp->setNextNode(NULL);
+    return temp;
 }
 
 /**
@@ -93,12 +110,26 @@ void SinglyLinkedList<T>::clearList() {
  *
 */
 template <class T>
+Node<T>* SinglyLinkedList<T>::getHead() {
+    return head_;
+}
+
+/**
+ *
+*/
+template <class T>
 void SinglyLinkedList<T>::printTraverse() {
     Node<T>* iter = head_;
     int count = 1;
     std::cout << "======= Printing out Singly Linked List: =======" << std::endl;
     while (iter != NULL){
-        std::cout << "Node #" << count << " value: " << iter->getValue() << std::endl;
+        if (iter->getNextNode() == NULL) {
+			std::cout << " " << iter->getValue() << " -> NULL" << std::endl;
+        }
+        else {
+            std::cout << " " << iter->getValue() << " ->";
+        }
+        
         ++count;
         iter = iter->getNextNode();
     }
@@ -132,3 +163,98 @@ void SinglyLinkedList<T>::removeDuplicateValues(bool useBuffer) {
     }
 }
 
+template <class T>
+Node<T>* SinglyLinkedList<T>::returnKthToLast(unsigned k) {
+    unsigned numNodes = 0;
+    Node<T>* iter = head_;
+
+    while (iter != NULL) {
+        ++numNodes;
+        iter = iter->getNextNode();
+    }
+
+    int ithNode = numNodes - k;
+
+    if (ithNode < 0) {
+        return NULL;
+    }
+    iter = head_;
+    while (ithNode > 0) {
+        iter = iter->getNextNode();
+        --ithNode;
+    }
+    return iter;
+}
+
+template <class T>
+void SinglyLinkedList<T>::partitionList(T value) {
+    SinglyLinkedList<T> greaterThanList;  //temporary list that hold values greater than value
+
+    if (head_ == NULL || head_->getNextNode() == NULL) {
+        return;  //can't do anything with a single or no-noded list
+    }
+
+    Node<T>* prev = head_;
+    Node<T>* curr = prev->getNextNode();
+
+    while (curr != NULL) {
+        if (curr->getValue() >= value) {
+            Node<T>* temp = curr;
+            curr = curr->getNextNode();
+            removeNodeInList_(prev, temp);
+            greaterThanList.pushFront(temp);
+        }
+        else {
+            prev = curr;
+            curr = curr->getNextNode();
+        }
+    }
+
+    if (head_->getValue() >= value) {
+        Node<T>* tempHead = head_;
+        head_ = head_->getNextNode();
+        greaterThanList.pushFront(tempHead);
+    }
+
+    prev->setNextNode(greaterThanList.getHead());
+}
+
+template <class T>
+bool SinglyLinkedList<T>::isPalindrome() {
+    Node<T>* iter = head_;
+    int count = 0;
+    bool isEven = false;
+
+    while (iter != NULL) {
+        ++count;
+        iter = iter->getNextNode();
+    }
+
+    if (count % 2 == 0) {
+        isEven = true;
+    }
+
+    count /= 2;
+    iter = head_;
+    std::stack<T> firstHalfVal;
+    while (iter != NULL) {
+        if (count > 0) {
+            firstHalfVal.push(iter->getValue());
+            --count;
+        }
+        else if (count == 0 && !isEven) {
+            --count;
+        }
+        else {
+            if (firstHalfVal.top() == iter->getValue()) {
+                firstHalfVal.pop();
+            }
+            else {
+                return false;
+            }
+        }
+        iter = iter->getNextNode();
+    }
+
+    return true;
+}
