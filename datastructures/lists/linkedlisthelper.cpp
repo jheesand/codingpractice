@@ -161,9 +161,4 @@ namespace LinkedListHelper {
         }
         return NULL;
     }
-
-    template <class T>
-    Node<T>* getStartCycle(Node<T>* pHead) {
-        return NULL;
-    }
 }  //end of namespace LinkedListHelper

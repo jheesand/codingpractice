@@ -18,10 +18,6 @@ namespace LinkedListHelper {
     //    return NULL if intersection not found
     template <class T>
     Node<T>* getIntersectNode(Node<T>* pHead1, Node<T>* pHead2);
-
-    //2.8 Loop detection
-    template <class T>
-    Node<T>* getStartCycle(Node<T>* pHead);
 }
 
 #include "linkedlisthelper.cpp"

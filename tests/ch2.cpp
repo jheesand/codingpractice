@@ -44,10 +44,16 @@ void Ch2Tests::init() {
 
     intSLLs_.push_back(SinglyLinkedList<int>());
     intSLLs_[11].pushFront(new Node<int>(1));
-    intSLLs_[11].pushFront(new Node<int>(3));
     intSLLs_[11].pushFront(new Node<int>(2));
     intSLLs_[11].pushFront(new Node<int>(3));
-    intSLLs_[11].pushFront(new Node<int>(1));
+    intSLLs_[11].pushFront(new Node<int>(4));
+    intSLLs_[11].pushFront(new Node<int>(5));
+    intSLLs_[11].pushFront(new Node<int>(6));
+    intSLLs_[11].pushFront(new Node<int>(7));
+    intSLLs_[11].pushFront(new Node<int>(8));
+    Node<int>* head = intSLLs_[11].getHead();
+    Node<int>* tail = intSLLs_[11].getTail();
+    tail->setNextNode(head->getNextNode()->getNextNode()->getNextNode());
 }
 
 void Ch2Tests::printAllLinkedLists() {
@@ -146,7 +152,19 @@ bool Ch2Tests::checkIntersect_(unsigned index1, unsigned index2) {
 
 
 void Ch2Tests::run() {
-    checkIntersect_(7,9);
+    Node<int>* n1 = intSLLs_[11].hasCycle();
+    if (n1 != NULL) {
+        intSLLs_[11].removeCycle();
+        bool removedWorked = false;
+        if(intSLLs_[11].hasCycle() == NULL) {
+            removedWorked = true;
+        }
+    }
+    Node<int>* n2 = intSLLs_[10].hasCycle();
+    if (n2 != NULL) {
+        intSLLs_[10].removeCycle();
+        bool removedWorked = intSLLs_[10].hasCycle();
+    }
 }
 
 void Ch2Tests::cleanup() {

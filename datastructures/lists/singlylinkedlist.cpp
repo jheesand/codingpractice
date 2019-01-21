@@ -118,6 +118,22 @@ Node<T>* SinglyLinkedList<T>::getHead() {
  *
 */
 template <class T>
+Node<T>* SinglyLinkedList<T>::getTail() {
+    Node<T>* iter = head_;
+    if (head_ == NULL) {
+        return NULL;
+    }
+    while (iter->getNextNode() != NULL) {
+        iter = iter->getNextNode();
+    }
+
+    return iter;
+}
+
+/**
+ *
+*/
+template <class T>
 void SinglyLinkedList<T>::printTraverse() {
     Node<T>* iter = head_;
     int count = 1;
@@ -272,4 +288,52 @@ void SinglyLinkedList<T>::attachLinkedList(SinglyLinkedList<T>& appendList) {
     }
 
     iter->setNextNode(appendList.getHead());
+}
+
+/* Uses Floyd's Cycle */
+template <class T>
+Node<T>* SinglyLinkedList<T>::hasCycle() {
+
+    if (head_ == NULL) {
+        return head_;
+    }
+
+    Node<T>* rabbit = head_;
+    Node<T>* turtle = head_;
+
+    do {
+        turtle = turtle->getNextNode();
+        rabbit = rabbit->getNextNode();
+        if (rabbit == NULL) {
+            return NULL; //list does not have a cycle!
+        }
+        rabbit = rabbit->getNextNode();
+    } while(rabbit != turtle && rabbit != NULL);
+
+    if (rabbit == NULL) {
+        return NULL;
+    }
+
+    Node<T>* turtle2 = head_;
+    while (turtle2 != turtle) {
+        turtle = turtle->getNextNode();
+        turtle2 = turtle2->getNextNode();
+    }
+    return turtle2;
+}
+
+template <class T>
+void SinglyLinkedList<T>::removeCycle() {
+
+    Node<T>* cycleNode = hasCycle();
+    if (cycleNode == NULL) {
+        return;
+    }
+    Node<T>* iter = cycleNode;
+
+    while (iter->getNextNode() != cycleNode) {
+        iter = iter->getNextNode();
+    }
+
+    iter->setNextNode(NULL);
 }

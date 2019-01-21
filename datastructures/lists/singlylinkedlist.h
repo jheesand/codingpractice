@@ -12,6 +12,7 @@ class SinglyLinkedList {
         void pushBack(Node<T>* nodePtr);
         void clearList();
         Node<T>* getHead();
+        Node<T>* getTail();
 
         void printTraverse();
         //2.4
@@ -25,6 +26,10 @@ class SinglyLinkedList {
         void removeDuplicateValues(bool useBuffer = true);
         //2.2
         Node<T>* returnKthToLast(unsigned k);
+
+        //2.8 Loop detection
+        Node<T>* hasCycle();
+        void removeCycle();
     private:
         void removeNodeInList_(Node<T>* prevNodePtr, Node<T>* nodePtr);
         //2.1 follow-up
