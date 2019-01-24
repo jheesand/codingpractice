@@ -10,11 +10,10 @@ class MultiStacks {
         void pop(unsigned stackId);
         int top(unsigned stackId);
         unsigned const getCapacity();
-        unsigned const getNumFilled();
+        unsigned const getNumFilled(unsigned id = N+1);
 
     private:
-        unsigned getNextStackId_(unsigned id);
-        bool overlaps(unsigned id1, unsigned id2);
+        unsigned const getNextStackId_(unsigned id);
         void shiftRByOne_(unsigned id);
 
         unsigned total_;

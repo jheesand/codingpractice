@@ -16,7 +16,7 @@ MultiStacks<T, N, M>::~MultiStacks() {
 }
 
 template <typename T, unsigned N, unsigned M>
-unsigned MultiStacks<T, N, M>::getNextStackId_(unsigned id) {
+unsigned const MultiStacks<T, N, M>::getNextStackId_(unsigned id) {
     unsigned stackIdNext = id + 1;
     if (stackIdNext < N) {
         return stackIdNext;
@@ -29,7 +29,7 @@ template <typename T, unsigned N, unsigned M>
 void MultiStacks<T, N, M>::shiftRByOne_(unsigned id) {
     unsigned startInd = startEndInd_[id].first;
     unsigned endInd = startEndInd_[id].second;
-    int numElements = static_cast<int>(endInd) - static_cast<int>(startInd) + 1;
+    int numElements = static_cast<int>(endInd) - static_cast<int>(startInd);
 
     if (endInd < startInd) {
         numElements = total_ - numElements;
@@ -52,8 +52,7 @@ void MultiStacks<T, N, M>::shiftRByOne_(unsigned id) {
 template <typename T, unsigned N, unsigned M>
 void MultiStacks<T, N, M>::push(unsigned stackId, T value) {
     // assert(stackId >= 0 && stackId < 3, "Invalid stack id!")
-    unsigned minReserved = N - 1;  // at least one unit of data reserved for each stack
-    if (numFilled_[stackId] + minReserved >= total_) {
+    if (getNumFilled() >= getCapacity()) {
         //filled
         return;
     }
@@ -61,16 +60,10 @@ void MultiStacks<T, N, M>::push(unsigned stackId, T value) {
     int& stackEndInd = startEndInd_[stackId].second;
     unsigned stackIdNext = getNextStackId_(stackId);
 
-    if (stackEndInd >= startEndInd_[stackIdNext].first) {
-        unsigned stackIdNextNext = getNextStackId_(stackIdNext + 1);
-        if (startEndInd_[stackIdNextNext].first + 2 >= total_) {
-            return;
-        }
-
-        if (startEndInd_[stackIdNext].second >= startEndInd_[stackIdNextNext].first) {
-            if (startEndInd_[stackIdNextNext].first + 1 >= total_) {
-                return;
-            }
+    //my current stack is full
+    if (stackEndInd == startEndInd_[stackIdNext].first) {
+        unsigned stackIdNextNext = getNextStackId_(stackIdNext);   
+        if (startEndInd_[stackIdNext].second == startEndInd_[stackIdNextNext].first) {
             shiftRByOne_(stackIdNextNext);
         }
         shiftRByOne_(stackIdNext);
@@ -85,7 +78,7 @@ void MultiStacks<T, N, M>::push(unsigned stackId, T value) {
 
 template <typename T, unsigned N, unsigned M>
 void MultiStacks<T, N, M>::pop(unsigned stackId) {
-    if (numFilled_ == 0 || (startEndInd_[stackId].second - startEndInd_[stackId].first == 0) && numFilled_ != total_) {
+    if (numFilled_[stackId] == 0) {
         return;
     }
 
@@ -113,7 +106,12 @@ unsigned const MultiStacks<T, N, M>::getCapacity() {
 }
 
 template <typename T, unsigned N, unsigned M>
-unsigned const MultiStacks<T, N, M>::getNumFilled() {
+unsigned const MultiStacks<T, N, M>::getNumFilled(unsigned id) {
+    //valid id or will treat as all the stacks
+    if (id < N) {
+        return numFilled_[id];
+    }
+
     unsigned total = 0;
 
     for (unsigned i = 0; i < N; ++i) {
