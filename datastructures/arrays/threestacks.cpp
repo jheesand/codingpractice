@@ -69,6 +69,11 @@ void MultiStacks<T, N, M>::push(unsigned stackId, T value) {
         shiftRByOne_(stackIdNext);
     }
 
+    if (minValues_[stackId].empty() || value < minValues_[stackId].top()) {
+        minValues_[stackId].push(value);
+        minIndices_[stackId].push(stackEndInd);
+    }
+
     data_[stackEndInd] = value;
 
     ++stackEndInd;
@@ -87,6 +92,15 @@ void MultiStacks<T, N, M>::pop(unsigned stackId) {
         stackEndInd += total_;
     }
     startEndInd_[stackId].second = stackEndInd;
+
+    int stackInd = stackEndInd - startEndInd_[stackId].first;
+    if (stackInd < 0) {
+        stackInd += total_;
+    }
+    if (minIndices_[stackId].top() <= stackInd) {
+        minIndices_[stackId].pop();
+        minValues_[stackId].pop();
+    }
     --numFilled_[stackId];
 }
 
@@ -119,4 +133,9 @@ unsigned const MultiStacks<T, N, M>::getNumFilled(unsigned id) {
     }
 
     return total;
+}
+
+template <typename T, unsigned N, unsigned M>
+T const MultiStacks<T, N, M>::getMin(unsigned stackId) {
+    return minValues_[stackId].top();
 }

@@ -14,14 +14,15 @@ int main(void) {
     MultiStacks<int, 3, 30> stack;
     for (unsigned i = 0; i < 30; ++i) {
         if (i < 20) {
-            stack.push(0, i);
+            stack.push(0, rand() % 40 + 1);
         }
         else {
-            stack.push(2, i*3);
+            stack.push(2, rand() % 100 + 1);
         }
     }
-    stack.pop(2);
-    stack.push(0,212);
-    stack.push(0, 112);
+
+    int min1 = stack.getMin(0);
+    int min3 = stack.getMin(2);
+
     return 0;
 }
