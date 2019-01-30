@@ -57,11 +57,12 @@ template <typename T>
 void BST<T>::printBreadthTree() {
     std::queue<Tree::BNode<T>* > nodeContainer;
     nodeContainer.push(root_);
+    nodeContainer.push(0);
+    unsigned int level = 0;
     std::cout << "Printing tree: "<< std::endl;
     while (!nodeContainer.empty()) {
         Tree::BNode<T>* node = nodeContainer.front();
         nodeContainer.pop();
-        std::cout << node->getValue() << " ";
 
         std::pair<Tree::BNode<T>*, Tree::BNode<T>* > children = node->getChildren();
         if (children.first) {
@@ -71,5 +72,16 @@ void BST<T>::printBreadthTree() {
         if (children.second) {
             nodeContainer.push(children.second);
         }
+
+        if (nodeContainer.front() == 0) {
+            std::cout << std::endl << "Level " << level << ": ";
+            nodeContainer.pop();
+            nodeContainer.push(0);
+            ++level;
+        }
+        std::cout << node->getValue() << ", ";
+        std::cout << "children: " << children.first->getValue() << children.second->getValue();
     }
+
+    std::cout << std::endl;
 }
