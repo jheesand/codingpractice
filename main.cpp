@@ -11,10 +11,11 @@
 
 
 int main(void) {
-    std::cout << "Hello World" << std::endl;
+
     std::vector<int> sortedArr{0, 1, 2, 3, 4, 5};
     BST<int> BinSTree(sortedArr);
     BinSTree.printBreadthTree();
-    std::cout << "Hello World Again" << std::endl;
+	bool IMREAL = BinSTree.validate();
+	bool IMBALANCED = BinSTree.isBalanced();
     return 0;
 }
