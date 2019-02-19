@@ -1,3 +1,5 @@
+#include <limits>
+#include <algorithm>
 
 template <typename T>
 Tree::BNode<T>* BST<T>::createMidNodeRecursive_(std::vector<T> const& sortedArr, unsigned leftIndex, unsigned endIndex) {
@@ -88,7 +90,7 @@ bool BST<T>::checkMinMax_(Tree::BNode<T>* root, T min, T max) {
 
 template <typename T>
 bool BST<T>::validate() {
-    return checkMinMax_(root_, -1000, 1000);
+    return checkMinMax_(root_, std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 }
 
 template <typename T>
@@ -112,14 +114,20 @@ int BST<T>::checkHeight_(Tree::BNode<T>* root) {
         return -1;
     }
 
-	int maxVal = leftHeight;
-	if (leftHeight < rightHeight) {
-		maxVal = rightHeight;
-	}
-    return maxVal + 1;  //+1 curr height
+    return std::max(leftHeight, rightHeight) + 1;  //+1 curr height
 }
 
 template <typename T>
 bool BST<T>::isBalanced() {
     return checkHeight_(root_) != -1;
+}
+
+template <typename T>
+Tree::BNode<T>* BST<T>::sewLeavesToDbLL_() {
+    Tree::BNode<T>** dblLListHeadPP = 0;
+    Tree::BNode<T>** lastNodePP = 0;
+    sewLeaves_(root_, dblLListHeadPP, lastNodePP);
+
+    (*lastNodePP)->setRightNode(0);
+    Tree::BNode<T>* headNodePtr = *dblLListHeadPP;
 }
