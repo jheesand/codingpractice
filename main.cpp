@@ -1,21 +1,8 @@
-// #include "./datastructures/lists/singlylinkedlist.h"
-// #include "./datastructures/arrays/stringsmasher.h"
-// #include "./datastructures/arrays/stringhelper.h"
-// #include "./tests/ch1.h"
-// #include "./tests/ch2.h"
-// #include "./datastructures/node.h"
-// #include "./datastructures/lists/singlylinkedlist.h"
-// #include "./datastructures/arrays/threestacks.h"
-#include "./datastructures/trees/bst.h"
-#include <vector>
-
-
+#include <iostream>
+#include "./datastructures/trees/serialize.h"
 int main(void) {
-
-    std::vector<int> sortedArr{0, 1, 2, 3, 4, 5};
-    BST<int> BinSTree(sortedArr);
-    BinSTree.printBreadthTree();
-	bool IMREAL = BinSTree.validate();
-	bool IMBALANCED = BinSTree.isBalanced();
+    Node* root = new Node("root", new Node("left", new Node("left.left", new Node("left.left.left")), new Node("left.right")), new Node("right"));
+    std::string serialized = serialize(root);
+    Node* rootClone = deserialize(serialized);
     return 0;
 }
